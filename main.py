@@ -14,7 +14,31 @@ def make_api_url(module, action, address, **kwargs):
 
     return url
 
-get_balance_url = make_api_url("account", "balance", address, tag="latest", x="2")
-response = get(get_balance_url)
-data = response.json()
-print(int(data["result"]) / ETHER_VALUE)
+def get_account_balance(address):
+
+    get_balance_url = make_api_url("account", "balance", address, tag="latest", x="2")
+    response = get(get_balance_url)
+    data = response.json()
+
+    value = (int(data["result"]) / ETHER_VALUE)
+    return value
+
+def get_transactions(address):
+    get_transactions_url = make_api_url("account", "txlist", address, startblock =0, endblock=99999999, page=1, offset = 10000, sort="asc")
+    response = get(get_transactions_url)
+    data = response.json()["result"]
+    
+    for tx in data:
+        to = tx["to"]
+        from_addr = tx["from"]
+        value = tx["value"]
+        gas = tx["gasUsed"]
+        time = tx["timeStamp"]
+        print("------------------")
+        print("To:", to)
+        print("From:", from_addr)
+        print("Value:", value)
+        print("Gas Used:", gas)
+        print("Time:", time)
+
+get_transactions(address)
